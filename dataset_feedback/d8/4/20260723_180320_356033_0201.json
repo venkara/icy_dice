@@ -1,0 +1,50 @@
+{
+  "created_at": "2026-07-23T18:04:12",
+  "die_type": "d8",
+  "session_id": "20260723_180320_356033",
+  "attempt": 2,
+  "die_number": 1,
+  "feedback_type": "user_flagged_misclassification",
+  "true_label": "4",
+  "true_value": 4,
+  "displayed_label": "5",
+  "displayed_value": 5,
+  "accepted_before_review": false,
+  "combined_confidence": 0.357327938079834,
+  "models": [
+    {
+      "name": "d8 center 55%",
+      "label": "5",
+      "value": 5,
+      "confidence": 0.3987393880171806,
+      "vote_fraction": 0.6111111111111112,
+      "probabilities": [
+        0.09846012193534426,
+        0.083932491677011,
+        0.09149920094491786,
+        0.2643404374027553,
+        0.3987393880171806,
+        0.02764480167443782,
+        0.02839830833994713,
+        0.006985267831086832
+      ]
+    },
+    {
+      "name": "d8 center 60%",
+      "label": "5",
+      "value": 5,
+      "confidence": 0.3159164680454624,
+      "vote_fraction": 0.5555555555555556,
+      "probabilities": [
+        0.2038321522995863,
+        0.10083099933288618,
+        0.015123557189628685,
+        0.05506840216004607,
+        0.3159164680454624,
+        0.03886567322399483,
+        0.26847780737455346,
+        0.001884932265411453
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "created_at": "2026-07-23T18:11:28",
+  "die_type": "d6",
+  "session_id": "20260723_181116_029319",
+  "attempt": 1,
+  "die_number": 5,
+  "feedback_type": "user_flagged_misclassification",
+  "true_label": "6",
+  "true_value": 6,
+  "displayed_label": "5",
+  "displayed_value": 5,
+  "accepted_before_review": false,
+  "combined_confidence": 0.5776799917221069,
+  "models": [
+    {
+      "name": "d6 center 68%",
+      "label": "5",
+      "value": 5,
+      "confidence": 0.5776800076439065,
+      "vote_fraction": 0.5,
+      "probabilities": [
+        2.842792551857364e-06,
+        0.00012059782999947465,
+        0.00011465438820312542,
+        2.441723650887465e-05,
+        0.5776800076439065,
+        0.42205748922295183
+      ]
+    }
+  ]
+}

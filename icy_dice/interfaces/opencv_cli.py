@@ -26,15 +26,12 @@ from ..presentation import (
 from ..workflow import WorkflowState
 from .. import vision
 
-
 RESULT_WINDOW_X = 425
 RESULT_WINDOW_Y = 1150
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Icy Dice generic live reader."
-    )
+    parser = argparse.ArgumentParser(description="Icy Dice generic live reader.")
     parser.add_argument(
         "--die-type",
         default="d8",
@@ -129,16 +126,9 @@ def parse_die_indices(
         else:
             values.add(int(token))
 
-    invalid = sorted(
-        value
-        for value in values
-        if not 1 <= value <= die_count
-    )
+    invalid = sorted(value for value in values if not 1 <= value <= die_count)
     if invalid:
-        raise ValueError(
-            "Die numbers out of range: "
-            + ", ".join(map(str, invalid))
-        )
+        raise ValueError("Die numbers out of range: " + ", ".join(map(str, invalid)))
     return {value - 1 for value in values}
 
 
@@ -165,19 +155,24 @@ def prompt_review(controller: ReaderController):
     for die_index in sorted(wrong):
         prediction = result.predictions[die_index]
         while True:
+            # response = input(
+            #     f"True value for die {die_index + 1} "
+            #     f"(displayed {prediction.value}): "
+            # ).strip()
             response = input(
                 f"True value for die {die_index + 1} "
-                f"(displayed {prediction.value}): "
+                f"(displayed {prediction.value}) "
+                "[Enter = not actually wrong]: "
             ).strip()
+
+            if not response:
+                wrong.discard(die_index)
+                break
             try:
                 semantic_value = int(response)
-                true_label = controller.profile.label_for_value(
-                    semantic_value
-                )
+                true_label = controller.profile.label_for_value(semantic_value)
             except (TypeError, ValueError):
-                allowed = ", ".join(
-                    map(str, controller.profile.allowed_values)
-                )
+                allowed = ", ".join(map(str, controller.profile.allowed_values))
                 print(f"Enter one of: {allowed}.")
                 continue
             if true_label == prediction.label:
@@ -472,13 +467,9 @@ def main() -> int:
                     f"Total: {result.total}"
                 )
                 if result.all_accepted:
-                    print(
-                        "Accepted. Press F if any displayed value is wrong."
-                    )
+                    print("Accepted. Press F if any displayed value is wrong.")
                 else:
-                    print(
-                        "Do not move dice. Press F to review the result."
-                    )
+                    print("Do not move dice. Press F to review the result.")
 
             if command == "f":
                 if controller.result is None:
@@ -501,16 +492,11 @@ def main() -> int:
                 if outcome.result.all_accepted:
                     print("All displayed values are accepted.")
                 else:
-                    print(
-                        "Move only red dice, keep green dice still, "
-                        "then press R."
-                    )
+                    print("Move only red dice, keep green dice still, " "then press R.")
 
             if command == "r":
                 if controller.workflow.state is not WorkflowState.RETRY_READY:
-                    print(
-                        "Review with F and flag actual errors before retrying."
-                    )
+                    print("Review with F and flag actual errors before retrying.")
                     continue
                 try:
                     selection = controller.capture_selection(
@@ -532,9 +518,7 @@ def main() -> int:
                 if result.all_accepted:
                     print("All dice accepted.")
                 else:
-                    print(
-                        "Do not move dice. Press F to review this retry."
-                    )
+                    print("Do not move dice. Press F to review this retry.")
 
             if command == "s":
                 save_debug(

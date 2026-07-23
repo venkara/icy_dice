@@ -1,0 +1,27 @@
+{
+  "input_root": "C:\\Users\\radha\\OneDrive\\Documents\\Python\\Icy Dice\\dataset\\d6",
+  "output_root": "C:\\Users\\radha\\OneDrive\\Documents\\Python\\Icy Dice\\dataset_variants",
+  "image_count": 720,
+  "class_counts": {
+    "1": 100,
+    "2": 142,
+    "3": 111,
+    "4": 136,
+    "5": 130,
+    "6": 101
+  },
+  "center_fraction": 0.68,
+  "center_dataset": "C:\\Users\\radha\\OneDrive\\Documents\\Python\\Icy Dice\\dataset_variants\\d6_center",
+  "numeral_dataset": "C:\\Users\\radha\\OneDrive\\Documents\\Python\\Icy Dice\\dataset_variants\\d6_numeral",
+  "status_counts": {
+    "detected": 675,
+    "detected-low-confidence": 28,
+    "fallback-no-numeral": 17
+  },
+  "manifest": "C:\\Users\\radha\\OneDrive\\Documents\\Python\\Icy Dice\\dataset_variants\\crop_manifest.csv",
+  "preview_pages": [
+    "C:\\Users\\radha\\OneDrive\\Documents\\Python\\Icy Dice\\dataset_variants\\previews\\crop_preview_01.jpg",
+    "C:\\Users\\radha\\OneDrive\\Documents\\Python\\Icy Dice\\dataset_variants\\previews\\crop_preview_02.jpg",
+    "C:\\Users\\radha\\OneDrive\\Documents\\Python\\Icy Dice\\dataset_variants\\previews\\crop_preview_03.jpg"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "created_at": "2026-07-23T14:40:52",
+  "session_id": "20260723_143955_216480",
+  "attempt": 1,
+  "die_number": 2,
+  "feedback_type": "user_confirmed_low_confidence_correct",
+  "true_value": 6,
+  "displayed_value": 6,
+  "accepted_before_review": false,
+  "combined_confidence": 0.7611740827560425,
+  "model55": {
+    "path": "models\\d8_center55\\d8_mobilenet_v3_small.pt",
+    "crop_fraction": 0.55,
+    "value": 6,
+    "confidence": 0.6526530748903048,
+    "vote_fraction": 0.8333333333333334,
+    "probabilities": [
+      0.001987227826036421,
+      0.04481839448388192,
+      0.003973578061215193,
+      0.051705616469208515,
+      0.017053468267356098,
+      0.6526530748903048,
+      0.0024306205425130376,
+      0.22537802888636088
+    ]
+  },
+  "model60": {
+    "path": "models\\d8_center60\\d8_mobilenet_v3_small.pt",
+    "crop_fraction": 0.6,
+    "value": 6,
+    "confidence": 0.8696950013258707,
+    "vote_fraction": 0.9444444444444444,
+    "probabilities": [
+      0.00025382065164295957,
+      0.0035613271624918776,
+      0.0027120506644342417,
+      0.01943616665215481,
+      0.007980056068187701,
+      0.8696950013258707,
+      0.00042030020870787967,
+      0.09594126751108827
+    ]
+  }
+}

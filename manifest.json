@@ -1,0 +1,15 @@
+{
+  "package": "Icy Dice refactor",
+  "version": "0.1",
+  "entry_points": {
+    "reader": "run_reader.py",
+    "collector": "collect_dataset.py",
+    "trainer": "train_die_classifier.py",
+    "model_smoke_test": "smoke_test_models.py"
+  },
+  "configured_die_types": {
+    "d6": "single 68% center-crop model",
+    "d8": "55%/60% center-crop ensemble",
+    "d10": "class and semantic mapping ready; models pending"
+  }
+}

@@ -1,0 +1,611 @@
+{
+  "created_at": "2026-07-24T10:02:09",
+  "before_settle": {
+    "captured_at": "2026-07-24T10:02:03",
+    "backend": "DSHOW",
+    "properties": {
+      "frame_width": {
+        "name": "frame_width",
+        "property_id": 3,
+        "value": 1920.0,
+        "readable": true,
+        "settable": null
+      },
+      "frame_height": {
+        "name": "frame_height",
+        "property_id": 4,
+        "value": 1080.0,
+        "readable": true,
+        "settable": null
+      },
+      "fps": {
+        "name": "fps",
+        "property_id": 5,
+        "value": 60.000240000960005,
+        "readable": true,
+        "settable": null
+      },
+      "fourcc": {
+        "name": "fourcc",
+        "property_id": 6,
+        "value": 1498831189.0,
+        "readable": true,
+        "settable": null
+      },
+      "format": {
+        "name": "format",
+        "property_id": 8,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "mode": {
+        "name": "mode",
+        "property_id": 9,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "brightness": {
+        "name": "brightness",
+        "property_id": 10,
+        "value": 128.0,
+        "readable": true,
+        "settable": true
+      },
+      "contrast": {
+        "name": "contrast",
+        "property_id": 11,
+        "value": 5.0,
+        "readable": true,
+        "settable": true
+      },
+      "saturation": {
+        "name": "saturation",
+        "property_id": 12,
+        "value": 32.0,
+        "readable": true,
+        "settable": true
+      },
+      "hue": {
+        "name": "hue",
+        "property_id": 13,
+        "value": -1.0,
+        "readable": true,
+        "settable": false
+      },
+      "gain": {
+        "name": "gain",
+        "property_id": 14,
+        "value": -1.0,
+        "readable": true,
+        "settable": false
+      },
+      "exposure": {
+        "name": "exposure",
+        "property_id": 15,
+        "value": -6.0,
+        "readable": true,
+        "settable": true
+      },
+      "auto_exposure": {
+        "name": "auto_exposure",
+        "property_id": 21,
+        "value": -1.0,
+        "readable": true,
+        "settable": true
+      },
+      "white_balance_temperature": {
+        "name": "white_balance_temperature",
+        "property_id": 45,
+        "value": 5000.0,
+        "readable": true,
+        "settable": true
+      },
+      "auto_white_balance": {
+        "name": "auto_white_balance",
+        "property_id": 44,
+        "value": 0.0,
+        "readable": true,
+        "settable": true
+      },
+      "focus": {
+        "name": "focus",
+        "property_id": 28,
+        "value": -1.0,
+        "readable": true,
+        "settable": false
+      },
+      "autofocus": {
+        "name": "autofocus",
+        "property_id": 39,
+        "value": -1.0,
+        "readable": true,
+        "settable": false
+      },
+      "sharpness": {
+        "name": "sharpness",
+        "property_id": 20,
+        "value": 2.0,
+        "readable": true,
+        "settable": true
+      },
+      "gamma": {
+        "name": "gamma",
+        "property_id": 22,
+        "value": -1.0,
+        "readable": true,
+        "settable": false
+      },
+      "backlight": {
+        "name": "backlight",
+        "property_id": 32,
+        "value": -1.0,
+        "readable": true,
+        "settable": false
+      },
+      "zoom": {
+        "name": "zoom",
+        "property_id": 27,
+        "value": 1.0,
+        "readable": true,
+        "settable": true
+      },
+      "pan": {
+        "name": "pan",
+        "property_id": 33,
+        "value": -1.0,
+        "readable": true,
+        "settable": false
+      },
+      "tilt": {
+        "name": "tilt",
+        "property_id": 34,
+        "value": -1.0,
+        "readable": true,
+        "settable": false
+      },
+      "iris": {
+        "name": "iris",
+        "property_id": 36,
+        "value": -1.0,
+        "readable": true,
+        "settable": false
+      }
+    }
+  },
+  "settled": {
+    "captured_at": "2026-07-24T10:02:06",
+    "backend": "DSHOW",
+    "properties": {
+      "frame_width": {
+        "name": "frame_width",
+        "property_id": 3,
+        "value": 1920.0,
+        "readable": true,
+        "settable": null
+      },
+      "frame_height": {
+        "name": "frame_height",
+        "property_id": 4,
+        "value": 1080.0,
+        "readable": true,
+        "settable": null
+      },
+      "fps": {
+        "name": "fps",
+        "property_id": 5,
+        "value": 60.000240000960005,
+        "readable": true,
+        "settable": null
+      },
+      "fourcc": {
+        "name": "fourcc",
+        "property_id": 6,
+        "value": 1498831189.0,
+        "readable": true,
+        "settable": null
+      },
+      "format": {
+        "name": "format",
+        "property_id": 8,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "mode": {
+        "name": "mode",
+        "property_id": 9,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "brightness": {
+        "name": "brightness",
+        "property_id": 10,
+        "value": 128.0,
+        "readable": true,
+        "settable": null
+      },
+      "contrast": {
+        "name": "contrast",
+        "property_id": 11,
+        "value": 5.0,
+        "readable": true,
+        "settable": null
+      },
+      "saturation": {
+        "name": "saturation",
+        "property_id": 12,
+        "value": 32.0,
+        "readable": true,
+        "settable": null
+      },
+      "hue": {
+        "name": "hue",
+        "property_id": 13,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "gain": {
+        "name": "gain",
+        "property_id": 14,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "exposure": {
+        "name": "exposure",
+        "property_id": 15,
+        "value": -6.0,
+        "readable": true,
+        "settable": null
+      },
+      "auto_exposure": {
+        "name": "auto_exposure",
+        "property_id": 21,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "white_balance_temperature": {
+        "name": "white_balance_temperature",
+        "property_id": 45,
+        "value": 5000.0,
+        "readable": true,
+        "settable": null
+      },
+      "auto_white_balance": {
+        "name": "auto_white_balance",
+        "property_id": 44,
+        "value": 0.0,
+        "readable": true,
+        "settable": null
+      },
+      "focus": {
+        "name": "focus",
+        "property_id": 28,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "autofocus": {
+        "name": "autofocus",
+        "property_id": 39,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "sharpness": {
+        "name": "sharpness",
+        "property_id": 20,
+        "value": 2.0,
+        "readable": true,
+        "settable": null
+      },
+      "gamma": {
+        "name": "gamma",
+        "property_id": 22,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "backlight": {
+        "name": "backlight",
+        "property_id": 32,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "zoom": {
+        "name": "zoom",
+        "property_id": 27,
+        "value": 1.0,
+        "readable": true,
+        "settable": null
+      },
+      "pan": {
+        "name": "pan",
+        "property_id": 33,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "tilt": {
+        "name": "tilt",
+        "property_id": 34,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "iris": {
+        "name": "iris",
+        "property_id": 36,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      }
+    }
+  },
+  "locked": {
+    "captured_at": "2026-07-24T10:02:09",
+    "backend": "DSHOW",
+    "properties": {
+      "frame_width": {
+        "name": "frame_width",
+        "property_id": 3,
+        "value": 1920.0,
+        "readable": true,
+        "settable": null
+      },
+      "frame_height": {
+        "name": "frame_height",
+        "property_id": 4,
+        "value": 1080.0,
+        "readable": true,
+        "settable": null
+      },
+      "fps": {
+        "name": "fps",
+        "property_id": 5,
+        "value": 60.000240000960005,
+        "readable": true,
+        "settable": null
+      },
+      "fourcc": {
+        "name": "fourcc",
+        "property_id": 6,
+        "value": 1498831189.0,
+        "readable": true,
+        "settable": null
+      },
+      "format": {
+        "name": "format",
+        "property_id": 8,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "mode": {
+        "name": "mode",
+        "property_id": 9,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "brightness": {
+        "name": "brightness",
+        "property_id": 10,
+        "value": 128.0,
+        "readable": true,
+        "settable": null
+      },
+      "contrast": {
+        "name": "contrast",
+        "property_id": 11,
+        "value": 5.0,
+        "readable": true,
+        "settable": null
+      },
+      "saturation": {
+        "name": "saturation",
+        "property_id": 12,
+        "value": 32.0,
+        "readable": true,
+        "settable": null
+      },
+      "hue": {
+        "name": "hue",
+        "property_id": 13,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "gain": {
+        "name": "gain",
+        "property_id": 14,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "exposure": {
+        "name": "exposure",
+        "property_id": 15,
+        "value": -6.0,
+        "readable": true,
+        "settable": null
+      },
+      "auto_exposure": {
+        "name": "auto_exposure",
+        "property_id": 21,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "white_balance_temperature": {
+        "name": "white_balance_temperature",
+        "property_id": 45,
+        "value": 5000.0,
+        "readable": true,
+        "settable": null
+      },
+      "auto_white_balance": {
+        "name": "auto_white_balance",
+        "property_id": 44,
+        "value": 0.0,
+        "readable": true,
+        "settable": null
+      },
+      "focus": {
+        "name": "focus",
+        "property_id": 28,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "autofocus": {
+        "name": "autofocus",
+        "property_id": 39,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "sharpness": {
+        "name": "sharpness",
+        "property_id": 20,
+        "value": 2.0,
+        "readable": true,
+        "settable": null
+      },
+      "gamma": {
+        "name": "gamma",
+        "property_id": 22,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "backlight": {
+        "name": "backlight",
+        "property_id": 32,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "zoom": {
+        "name": "zoom",
+        "property_id": 27,
+        "value": 1.0,
+        "readable": true,
+        "settable": null
+      },
+      "pan": {
+        "name": "pan",
+        "property_id": 33,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "tilt": {
+        "name": "tilt",
+        "property_id": 34,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      },
+      "iris": {
+        "name": "iris",
+        "property_id": 36,
+        "value": -1.0,
+        "readable": true,
+        "settable": null
+      }
+    }
+  },
+  "settle_metrics": {
+    "frame_count": 66,
+    "mean_luminance": 199.2078489823775,
+    "luminance_std_across_frames": 7.482905783604119,
+    "luminance_range": 61.2841796875,
+    "mean_shadow_fraction": 0.000949103301533857,
+    "mean_highlight_fraction": 0.1768186567644033,
+    "median_sharpness": 35.10542432493382,
+    "minimum_sharpness": 34.92567700509744,
+    "channel_ranges": [
+      65.88904320987653,
+      62.53326822916668,
+      56.90576967592591
+    ]
+  },
+  "locked_metrics": {
+    "frame_count": 26,
+    "mean_luminance": 141.47279592660757,
+    "luminance_std_across_frames": 11.725224462634307,
+    "luminance_range": 61.00685119628906,
+    "mean_shadow_fraction": 0.014580569652184235,
+    "mean_highlight_fraction": 0.06362849077041785,
+    "median_sharpness": 81.14419824729364,
+    "minimum_sharpness": 35.30103435108805,
+    "channel_ranges": [
+      65.5943711419753,
+      62.283074363425925,
+      56.59783613040122
+    ]
+  },
+  "actions": [
+    {
+      "control": "auto_exposure",
+      "attempted": true,
+      "succeeded": false,
+      "before": -1.0,
+      "requested": 1.0,
+      "after": -1.0,
+      "note": "driver accepted write but reported a different value"
+    },
+    {
+      "control": "auto_white_balance",
+      "attempted": true,
+      "succeeded": true,
+      "before": 0.0,
+      "requested": 0.0,
+      "after": 0.0,
+      "note": ""
+    },
+    {
+      "control": "white_balance_temperature",
+      "attempted": true,
+      "succeeded": true,
+      "before": 5000.0,
+      "requested": 5000.0,
+      "after": 5000.0,
+      "note": ""
+    },
+    {
+      "control": "autofocus",
+      "attempted": false,
+      "succeeded": false,
+      "before": -1.0,
+      "requested": 0.0,
+      "after": -1.0,
+      "note": "driver declined property write"
+    }
+  ],
+  "warnings": [
+    "a noticeable fraction of pixels are clipped in highlights",
+    "brightness is still fluctuating after control locking",
+    "brightness range across verification frames is high",
+    "color balance is drifting across verification frames",
+    "auto exposure could not be locked by this driver",
+    "autofocus could not be locked by this driver"
+  ],
+  "preview_metrics": {
+    "mean_luminance": 139.09201049804688,
+    "luminance_std": 64.18476104736328,
+    "shadow_fraction": 0.015074266975308642,
+    "highlight_fraction": 0.058976176697530865,
+    "sharpness": 81.23836467615007,
+    "mean_blue": 112.09245707947531,
+    "mean_green": 131.75009500385804,
+    "mean_red": 163.79609616126544
+  }
+}

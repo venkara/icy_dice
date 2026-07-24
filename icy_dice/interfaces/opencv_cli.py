@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 from dataclasses import replace
 from datetime import datetime
 from pathlib import Path
@@ -15,6 +16,7 @@ except ImportError:
 import cv2
 import numpy as np
 
+from ..camera import concise_report
 from ..config import get_profile
 from ..controller import ReaderController
 from ..presentation import (
@@ -26,12 +28,15 @@ from ..presentation import (
 from ..workflow import WorkflowState
 from .. import vision
 
+
 RESULT_WINDOW_X = 425
 RESULT_WINDOW_Y = 1150
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Icy Dice generic live reader.")
+    parser = argparse.ArgumentParser(
+        description="Icy Dice generic live reader."
+    )
     parser.add_argument(
         "--die-type",
         default="d8",
@@ -52,6 +57,28 @@ def parse_args() -> argparse.Namespace:
         "--vote-threshold",
         type=float,
         default=None,
+    )
+    parser.add_argument(
+        "--skip-camera-calibration",
+        action="store_true",
+        help="Open the camera without settling and locking automatic controls.",
+    )
+    parser.add_argument(
+        "--settle-seconds",
+        type=float,
+        default=2.5,
+        help="Seconds to let automatic camera controls settle before locking.",
+    )
+    parser.add_argument(
+        "--verification-seconds",
+        type=float,
+        default=1.0,
+        help="Seconds of stability measurements after camera controls lock.",
+    )
+    parser.add_argument(
+        "--no-lock-camera-controls",
+        action="store_true",
+        help="Measure camera stability without disabling automatic controls.",
     )
     return parser.parse_args()
 
@@ -91,7 +118,7 @@ def poll_command() -> str | None:
         code = key & 0xFF
         if code:
             character = chr(code).lower()
-            if character in {"b", "c", "f", "n", "r", "s", "q"}:
+            if character in {"b", "c", "f", "k", "n", "r", "s", "q"}:
                 return character
 
     if msvcrt is not None and msvcrt.kbhit():
@@ -103,7 +130,7 @@ def poll_command() -> str | None:
         if character == "\x1b":
             return "q"
         character = character.lower()
-        if character in {"b", "c", "f", "n", "r", "s", "q"}:
+        if character in {"b", "c", "f", "k", "n", "r", "s", "q"}:
             return character
     return None
 
@@ -126,13 +153,24 @@ def parse_die_indices(
         else:
             values.add(int(token))
 
-    invalid = sorted(value for value in values if not 1 <= value <= die_count)
+    invalid = sorted(
+        value
+        for value in values
+        if not 1 <= value <= die_count
+    )
     if invalid:
-        raise ValueError("Die numbers out of range: " + ", ".join(map(str, invalid)))
+        raise ValueError(
+            "Die numbers out of range: "
+            + ", ".join(map(str, invalid))
+        )
     return {value - 1 for value in values}
 
 
-def prompt_review(controller: ReaderController):
+def prompt_review(
+    controller: ReaderController,
+    camera: cv2.VideoCapture,
+    source_frame: np.ndarray,
+):
     result = controller.result
     if result is None:
         raise RuntimeError("No result is available.")
@@ -155,36 +193,41 @@ def prompt_review(controller: ReaderController):
     for die_index in sorted(wrong):
         prediction = result.predictions[die_index]
         while True:
-            # response = input(
-            #     f"True value for die {die_index + 1} "
-            #     f"(displayed {prediction.value}): "
-            # ).strip()
             response = input(
                 f"True value for die {die_index + 1} "
-                f"(displayed {prediction.value}) "
-                "[Enter = not actually wrong]: "
+                f"(displayed {prediction.value}; "
+                "Enter = not actually wrong): "
             ).strip()
-
             if not response:
                 wrong.discard(die_index)
                 break
             try:
                 semantic_value = int(response)
-                true_label = controller.profile.label_for_value(semantic_value)
+                true_label = controller.profile.label_for_value(
+                    semantic_value
+                )
             except (TypeError, ValueError):
-                allowed = ", ".join(map(str, controller.profile.allowed_values))
+                allowed = ", ".join(
+                    map(str, controller.profile.allowed_values)
+                )
                 print(f"Enter one of: {allowed}.")
                 continue
             if true_label == prediction.label:
                 print(
-                    "That matches the displayed value; remove this die "
-                    "from the wrong-dice list or enter its actual value."
+                    "That matches the displayed value. Press Enter to "
+                    "remove this die from the wrong-dice list, or enter "
+                    "its actual different value."
                 )
                 continue
             true_labels[die_index] = true_label
             break
 
-    return controller.review(wrong, true_labels)
+    return controller.review(
+        wrong,
+        true_labels,
+        camera=camera,
+        source_frame=source_frame,
+    )
 
 
 def show_result_window(
@@ -211,6 +254,7 @@ def show_result_window(
 
 def save_debug(
     controller: ReaderController,
+    camera: cv2.VideoCapture,
     raw_frame,
     rectified,
     mask,
@@ -238,6 +282,11 @@ def save_debug(
         "die_type": controller.profile.die_type,
         "count": controller.workflow.count,
         "state": controller.workflow.state.name,
+        "camera": (
+            controller.camera_session_metadata(camera, raw_frame)
+            if raw_frame is not None
+            else None
+        ),
         "predictions": [],
     }
     if result is not None:
@@ -305,6 +354,20 @@ def main() -> int:
     controller = ReaderController(profile, count)
     camera = vision.open_camera()
 
+    if not args.skip_camera_calibration:
+        print("\nLetting camera controls settle, then attempting to lock them...")
+        report = controller.calibrate_camera(
+            camera,
+            settle_seconds=args.settle_seconds,
+            verification_seconds=args.verification_seconds,
+            lock_controls=not args.no_lock_camera_controls,
+        )
+        print(concise_report(report))
+        print(
+            "Camera report saved to: "
+            f"{controller.camera_calibrator.report_path.resolve()}"
+        )
+
     main_window = f"Icy Dice - {profile.die_type} Live Reader"
     result_window = "Icy Dice - Result Details"
     cv2.namedWindow(main_window, cv2.WINDOW_NORMAL)
@@ -312,7 +375,7 @@ def main() -> int:
 
     print(f"Icy Dice generic reader: {profile.die_type}")
     print("Controls: B background, C capture, F review, R retry,")
-    print("          N new count, S save debug, Q quit")
+    print("          K recalibrate camera, N new count, S save debug, Q quit")
     print(
         f"Models loaded on {controller.ensemble.device}: "
         + ", ".join(bundle.name for bundle in controller.ensemble.bundles)
@@ -327,6 +390,8 @@ def main() -> int:
     last_corners = None
     last_ids = None
     marker_count = 0
+    last_health_check = 0.0
+    last_health_signature: tuple[str, ...] = tuple()
 
     try:
         while True:
@@ -350,6 +415,21 @@ def main() -> int:
             if marker_count == 4:
                 source_points = vision.find_inward_marker_corners(corners)
                 last_rectified = vision.rectify_tray(frame, source_points)
+
+            now = time.monotonic()
+            if (
+                controller.background_camera_reference is not None
+                and now - last_health_check >= 1.0
+            ):
+                health = controller.check_camera(camera, frame)
+                last_health_check = now
+                signature = tuple() if health is None else health.warnings
+                if signature and signature != last_health_signature:
+                    print("\nCamera/background warning:")
+                    for warning in signature:
+                        print(f"  - {warning}")
+                    print("Consider removing the dice and pressing B again.")
+                last_health_signature = signature
 
             if (
                 controller.result is not None
@@ -417,7 +497,12 @@ def main() -> int:
                         )
                         continue
 
-                controller.set_background(last_rectified)
+                controller.set_background(
+                    last_rectified,
+                    camera=camera,
+                    source_frame=last_frame,
+                )
+                last_health_signature = tuple()
                 last_main = None
                 last_sheet = None
                 vision.close_window_if_open(result_window)
@@ -426,6 +511,30 @@ def main() -> int:
                     f"{controller.workflow.request.expression}; "
                     "after the dice stop, press C."
                 )
+
+            if command == "k":
+                print(
+                    "\nRemove all dice. Recalibrating camera controls; "
+                    "the current background/result will be discarded."
+                )
+                try:
+                    report = controller.calibrate_camera(
+                        camera,
+                        settle_seconds=args.settle_seconds,
+                        verification_seconds=args.verification_seconds,
+                        lock_controls=not args.no_lock_camera_controls,
+                    )
+                except RuntimeError as error:
+                    print(f"Camera calibration failed: {error}")
+                    continue
+                controller.workflow.reset()
+                controller.background_camera_reference = None
+                last_main = None
+                last_sheet = None
+                last_health_signature = tuple()
+                vision.close_window_if_open(result_window)
+                print(concise_report(report))
+                print("Remove all dice and press B for a new background.")
 
             if command == "n":
                 new_count = prompt_count(
@@ -449,6 +558,12 @@ def main() -> int:
                         "R after review, or B for a new roll."
                     )
                     continue
+                health = controller.check_camera(camera, last_frame)
+                if health is not None and health.warnings:
+                    print("Camera/background changed since B:")
+                    for warning in health.warnings:
+                        print(f"  - {warning}")
+                    print("Capture will continue; take a new B background if needed.")
                 try:
                     selection = controller.capture_selection(
                         camera,
@@ -467,9 +582,13 @@ def main() -> int:
                     f"Total: {result.total}"
                 )
                 if result.all_accepted:
-                    print("Accepted. Press F if any displayed value is wrong.")
+                    print(
+                        "Accepted. Press F if any displayed value is wrong."
+                    )
                 else:
-                    print("Do not move dice. Press F to review the result.")
+                    print(
+                        "Do not move dice. Press F to review the result."
+                    )
 
             if command == "f":
                 if controller.result is None:
@@ -479,7 +598,11 @@ def main() -> int:
                     print("This capture has already been reviewed.")
                     continue
                 try:
-                    outcome = prompt_review(controller)
+                    outcome = prompt_review(
+                        controller,
+                        camera,
+                        last_frame,
+                    )
                 except (RuntimeError, ValueError) as error:
                     print(f"Review failed: {error}")
                     continue
@@ -492,12 +615,23 @@ def main() -> int:
                 if outcome.result.all_accepted:
                     print("All displayed values are accepted.")
                 else:
-                    print("Move only red dice, keep green dice still, " "then press R.")
+                    print(
+                        "Move only red dice, keep green dice still, "
+                        "then press R."
+                    )
 
             if command == "r":
                 if controller.workflow.state is not WorkflowState.RETRY_READY:
-                    print("Review with F and flag actual errors before retrying.")
+                    print(
+                        "Review with F and flag actual errors before retrying."
+                    )
                     continue
+                health = controller.check_camera(camera, last_frame)
+                if health is not None and health.warnings:
+                    print("Camera/background changed since B:")
+                    for warning in health.warnings:
+                        print(f"  - {warning}")
+                    print("Capture will continue; take a new B background if needed.")
                 try:
                     selection = controller.capture_selection(
                         camera,
@@ -518,11 +652,14 @@ def main() -> int:
                 if result.all_accepted:
                     print("All dice accepted.")
                 else:
-                    print("Do not move dice. Press F to review this retry.")
+                    print(
+                        "Do not move dice. Press F to review this retry."
+                    )
 
             if command == "s":
                 save_debug(
                     controller,
+                    camera,
                     last_frame,
                     last_rectified,
                     last_mask,

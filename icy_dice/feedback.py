@@ -23,6 +23,13 @@ class FeedbackStore:
         self.profile = profile
         self.ensemble = ensemble
         self.root = root or profile.feedback_directory
+        self.context_metadata: dict[str, object] | None = None
+
+    def set_context(
+        self,
+        metadata: dict[str, object] | None,
+    ) -> None:
+        self.context_metadata = metadata
 
     def _masked_crop(
         self,
@@ -72,6 +79,7 @@ class FeedbackStore:
             "displayed_value": prediction.value,
             "accepted_before_review": prediction.accepted,
             "combined_confidence": prediction.combined_confidence,
+            "camera": self.context_metadata,
             "models": [
                 {
                     "name": model_result.model_name,

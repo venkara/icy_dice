@@ -16,6 +16,8 @@ from pathlib import Path
 import cv2
 import numpy as np
 
+from icy_dice.camera import CameraCalibrator, concise_report
+
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -1275,6 +1277,7 @@ def save_capture(
     annotated: np.ndarray,
     candidate_images: list[CandidateImages],
     capture_burst_metadata: dict[str, object] | None = None,
+    camera_metadata: dict[str, object] | None = None,
 ) -> Path:
     session_id = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
     session_path = SESSION_DIRECTORY / session_id
@@ -1339,6 +1342,7 @@ def save_capture(
         "foreground_close_iterations": FOREGROUND_CLOSE_ITERATIONS,
         "edge_mask_removed": True,
         "burst": capture_burst_metadata,
+        "camera": camera_metadata,
         "candidates": metadata_candidates,
     }
 
@@ -1403,7 +1407,7 @@ def poll_command() -> str | None:
         if character_code:
             character = chr(character_code).lower()
 
-            if character in {"b", "c", "n", "s", "q"}:
+            if character in {"b", "c", "k", "n", "s", "q"}:
                 return character
 
     if msvcrt is not None and msvcrt.kbhit():
@@ -1420,7 +1424,7 @@ def poll_command() -> str | None:
 
         character = character.lower()
 
-        if character in {"b", "c", "n", "s", "q"}:
+        if character in {"b", "c", "k", "n", "s", "q"}:
             return character
 
     return None
@@ -1648,6 +1652,15 @@ def main() -> int:
     print("After rolling, wait for the dice to stop and press C.")
 
     camera = open_camera()
+    camera_calibrator = CameraCalibrator()
+    print("\nLetting camera controls settle, then attempting to lock them...")
+    camera_report = camera_calibrator.calibrate(camera)
+    print(concise_report(camera_report))
+    print(
+        "Camera report saved to: "
+        f"{camera_calibrator.report_path.resolve()}"
+    )
+    background_camera_reference = None
     detector, dictionary, parameters = create_aruco_detector()
 
     main_window = "Icy Dice - Dataset Collector v4.1"
@@ -1666,6 +1679,7 @@ def main() -> int:
     print("\nControls")
     print("  B  capture fresh empty-tray background for the next roll")
     print("  C  capture a one-second burst and select the best 18 frames")
+    print("  K  recalibrate and relock the camera")
     print("  N  choose a new number/type of dice")
     print("  S  save current debug images")
     print("  Q  quit")
@@ -1782,6 +1796,12 @@ def main() -> int:
                 background_ready = True
                 saved_result_display = None
                 save_background(background)
+                background_camera_reference = (
+                    camera_calibrator.make_reference(
+                        camera,
+                        last_frame,
+                    )
+                )
 
                 last_mask = None
                 last_component_labels = None
@@ -1794,12 +1814,35 @@ def main() -> int:
                     "when the dice stop, press C."
                 )
 
+            if command == "k":
+                print(
+                    "\nRemove all dice. Recalibrating camera controls; "
+                    "the current background will be discarded."
+                )
+                try:
+                    camera_report = camera_calibrator.calibrate(camera)
+                except RuntimeError as error:
+                    print(f"Camera calibration failed: {error}")
+                    continue
+                print(concise_report(camera_report))
+                background = None
+                background_ready = False
+                background_camera_reference = None
+                saved_result_display = None
+                last_mask = None
+                last_component_labels = None
+                last_candidates = []
+                last_split_count = 0
+                close_window_if_open(enumeration_window)
+                print("Remove all dice and press B for a new background.")
+
             if command == "n":
                 print("\nClick PowerShell to enter a new roll.")
                 request = prompt_for_roll_request(request)
 
                 background = None
                 background_ready = False
+                background_camera_reference = None
                 saved_result_display = None
                 last_mask = None
                 last_component_labels = None
@@ -1830,6 +1873,24 @@ def main() -> int:
                         "for a fresh background first."
                     )
                     continue
+
+                if (
+                    background_camera_reference is not None
+                    and last_frame is not None
+                ):
+                    health = camera_calibrator.check_reference(
+                        camera,
+                        last_frame,
+                        background_camera_reference,
+                    )
+                    if health.warnings:
+                        print("\nCamera/background changed since B:")
+                        for warning in health.warnings:
+                            print(f"  - {warning}")
+                        print(
+                            "Capture will continue; remove dice and take "
+                            "a new B background if the mask looks unstable."
+                        )
 
                 print(
                     f"\nCapturing approximately "
@@ -1956,6 +2017,15 @@ def main() -> int:
                     annotated=frozen_annotated,
                     candidate_images=candidate_images,
                     capture_burst_metadata=burst_metadata(selection),
+                    camera_metadata=(
+                        camera_calibrator.session_metadata(
+                            camera,
+                            last_frame,
+                            background_camera_reference,
+                        )
+                        if last_frame is not None
+                        else None
+                    ),
                 )
 
                 print(f"\nSaved session: {session_path.resolve()}")
@@ -1967,6 +2037,7 @@ def main() -> int:
                 # An accepted roll consumes its background reference.
                 background = None
                 background_ready = False
+                background_camera_reference = None
                 last_mask = None
                 last_component_labels = None
                 last_candidates = []

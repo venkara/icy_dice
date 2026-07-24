@@ -100,3 +100,55 @@ controller.recognize_retry(selection)
 ```
 
 The current OpenCV interface is now only one client of those operations.
+
+## Camera calibration and control locking
+
+The reader now lets automatic exposure, white balance, and autofocus settle at
+startup, then asks the camera driver to lock them. Because webcam drivers use
+incompatible property conventions, each write is verified and unsupported
+controls are reported rather than assumed.
+
+Run the camera module by itself with an empty tray:
+
+```powershell
+py .\calibrate_camera.py
+```
+
+It writes:
+
+```text
+calibration/camera_calibration.json
+calibration/camera_calibration_preview.png
+```
+
+The JSON records all readable OpenCV camera properties, attempted control
+locks, brightness/clipping/sharpness measurements, temporal brightness and
+color stability, and any warnings.
+
+The generic reader runs this calibration automatically. Options are:
+
+```powershell
+py .\run_reader.py --die-type d8 --count 8
+py .\run_reader.py --die-type d8 --count 8 --skip-camera-calibration
+py .\run_reader.py --die-type d8 --count 8 --no-lock-camera-controls
+py .\run_reader.py --die-type d8 --count 8 --settle-seconds 4
+```
+
+Press **K** in the reader or collector to recalibrate. Recalibration invalidates
+the current empty-tray background, because the camera image may have changed.
+Press **B** afterward.
+
+When **B** is pressed, the controller stores a camera-property and image-metric
+reference. It periodically warns when exposure, gain, white balance, focus,
+brightness, color balance, or sharpness changes materially from that reference.
+Warnings do not block capture; they indicate that a fresh background may be
+needed.
+
+Debug records, feedback records, and newly collected session metadata include
+the available camera settings and calibration measurements.
+
+A hardware-free module test is included:
+
+```powershell
+py .\smoke_test_camera.py
+```

@@ -5,6 +5,12 @@ from dataclasses import dataclass
 import cv2
 import numpy as np
 
+from .camera import (
+    CameraCalibrationReport,
+    CameraCalibrator,
+    CameraHealth,
+    CameraReference,
+)
 from .config import DieProfile
 from .feedback import FeedbackStore
 from .models import ModelEnsemble
@@ -56,6 +62,9 @@ class ReaderController:
             self.dictionary,
             self.parameters,
         ) = vision.create_aruco_detector()
+        self.camera_calibrator = CameraCalibrator()
+        self.camera_calibration_report: CameraCalibrationReport | None = None
+        self.background_camera_reference: CameraReference | None = None
 
     @property
     def result(self) -> RecognitionResult | None:
@@ -114,9 +123,65 @@ class ReaderController:
             split_count=split_count,
         )
 
-    def set_background(self, rectified: np.ndarray) -> None:
+    def calibrate_camera(
+        self,
+        camera: cv2.VideoCapture,
+        *,
+        settle_seconds: float = 2.5,
+        verification_seconds: float = 1.0,
+        lock_controls: bool = True,
+    ) -> CameraCalibrationReport:
+        self.camera_calibration_report = self.camera_calibrator.calibrate(
+            camera,
+            settle_seconds=settle_seconds,
+            verification_seconds=verification_seconds,
+            lock_controls=lock_controls,
+        )
+        self.background_camera_reference = None
+        return self.camera_calibration_report
+
+    def set_background(
+        self,
+        rectified: np.ndarray,
+        *,
+        camera: cv2.VideoCapture | None = None,
+        source_frame: np.ndarray | None = None,
+    ) -> None:
         self.workflow.set_background(rectified)
         vision.save_background(rectified)
+        if camera is not None and source_frame is not None:
+            self.background_camera_reference = (
+                self.camera_calibrator.make_reference(
+                    camera,
+                    source_frame,
+                )
+            )
+        else:
+            self.background_camera_reference = None
+
+    def check_camera(
+        self,
+        camera: cv2.VideoCapture,
+        source_frame: np.ndarray,
+    ) -> CameraHealth | None:
+        if self.background_camera_reference is None:
+            return None
+        return self.camera_calibrator.check_reference(
+            camera,
+            source_frame,
+            self.background_camera_reference,
+        )
+
+    def camera_session_metadata(
+        self,
+        camera: cv2.VideoCapture,
+        source_frame: np.ndarray,
+    ) -> dict[str, object]:
+        return self.camera_calibrator.session_metadata(
+            camera,
+            source_frame,
+            self.background_camera_reference,
+        )
 
     def capture_selection(
         self,
@@ -149,7 +214,19 @@ class ReaderController:
         self,
         wrong_indices: set[int],
         true_labels: dict[int, str],
+        *,
+        camera: cv2.VideoCapture | None = None,
+        source_frame: np.ndarray | None = None,
     ) -> ReviewOutcome:
+        if camera is not None and source_frame is not None:
+            self.feedback_store.set_context(
+                self.camera_session_metadata(
+                    camera,
+                    source_frame,
+                )
+            )
+        else:
+            self.feedback_store.set_context(None)
         return self.workflow.review(wrong_indices, true_labels)
 
     def recognize_retry(
